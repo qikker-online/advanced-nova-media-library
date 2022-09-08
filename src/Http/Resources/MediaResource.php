@@ -4,6 +4,7 @@ namespace Ebess\AdvancedNovaMediaLibrary\Http\Resources;
 
 use Ebess\AdvancedNovaMediaLibrary\Fields\HandlesConversionsTrait;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 class MediaResource extends JsonResource
 {
@@ -17,6 +18,10 @@ class MediaResource extends JsonResource
      */
     public function toArray($request)
     {
+        $this->secureUntil = Carbon::now()->addHour();
+        $mediaUrls =  $this->getTemporaryConversionUrls($this->resource);
+
+
         /**
          * This is incompatible with following settings on the Field.
          * - conversionOnIndexView
@@ -26,6 +31,6 @@ class MediaResource extends JsonResource
          * - serializeMediaUsing
          *
          */
-        return array_merge($this->resource->toArray(), ['__media_urls__' => $this->getConversionUrls($this->resource)]);
+        return array_merge($this->resource->toArray(), ['__media_urls__' => $mediaUrls]);
     }
 }
